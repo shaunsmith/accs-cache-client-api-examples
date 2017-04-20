@@ -17,7 +17,7 @@ public class UserController {
 
 	public static final Optional<String> PORT = Optional.ofNullable(System.getenv("PORT"));
 
-	public UserController(final UserService userService) {
+	public UserController(final AbstractUserService userService) {
 
 		Integer port = Integer.valueOf(PORT.orElse("8080"));
 		port(port);
@@ -29,7 +29,7 @@ public class UserController {
 			if (user != null) {
 				return user;
 			}
-			res.status(400);
+			res.status(404);
 			return new ResponseError("No user with id '%s' found", id);
 		}, json());
 
@@ -56,5 +56,6 @@ public class UserController {
 			res.status(400);
 			res.body(toJson(new ResponseError(e)));
 		});
+
 	}
 }

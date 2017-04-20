@@ -1,5 +1,5 @@
-Oracle Application Container Cloud: Introducing the Application Cache Java API
-==============================================================================
+Oracle Application Container Cloud: Introducing the Application Cache Java Client Library
+=========================================================================================
 
 The [Oracle Application Container Cloud (ACCS)](http://cloud.oracle.com/acc)'s Application Cache provides (as the name implies) caching for applications!  You simply specify the amount of memory you want to cache and whether you just need basic non-HA cache for dev/test or reliable caching for production and the appropriate infrastructure is automatically provisioned.  
 
@@ -15,14 +15,14 @@ That's a little about the amazing engine that's under the hood, but let's get ba
 Java Caching
 ------------
 
-The Application Cache was initially released with a language independent REST API, but to make it easier for Java applications to leverage caching a new native Java API was created.  In addition to simplifying cache usage from Java, the API also adds the option of [GRPC](http://www.grpc.io/) for efficient data transfer between caches and clients. The client API is an open source framework with sources hosted on [GitHub](https://github.com/oracle/accs-caching-java-sdk) and binaries both directly downloadable and available through Maven Central.
+The Application Cache was initially released with a language independent REST API, but to make it easier for Java applications to leverage caching a new native Java client library created.  In addition to simplifying cache usage from Java, the library also adds the option of [GRPC](http://www.grpc.io/) for efficient data transfer between caches and clients. The client library is an open source framework with sources hosted on [GitHub](https://github.com/oracle/accs-caching-java-sdk) and binaries both directly downloadable and available through Maven Central.
 
-To introduce the Java client API I'll go over usage basics in the context of a simple example and then show how to deploy that example code to Application Container Cloud.
+To introduce the Java client library I'll go over usage basics in the context of a simple example and then show how to deploy that example code to Application Container Cloud.
 
 Background
 ----------
 
-My assumption is that you're familiar with the features of the Application Cache and I'm just going to focus on the Java client API.  If you're not familiar with the ACCS Application Cache yet you can learn more with with the following resources:
+My assumption is that you're familiar with the features of the Application Cache and I'm just going to focus on the Java client library.  If you're not familiar with the ACCS Application Cache yet you can learn more with with the following resources:
 
 * [Using Caches in Oracle Application Container Cloud Service](http://docs.oracle.com/en/cloud/paas/app-container-cloud/cache/index.html)
 * Tutorial: [Create a Java application using the Caching REST API in Oracle Application Container Cloud Service](http://www.oracle.com/webfolder/technetwork/tutorials/obe/cloud/apaas/java/java-accs-caching-basic/java-accs-caching-basic.html)
@@ -32,7 +32,7 @@ My assumption is that you're familiar with the features of the Application Cache
 Cache API Basics
 ----------------
 
-To access a cache using the Java client API there are a few simple steps:
+To access a cache using the Java client library there are a few simple steps:
 
 1. Create a `SessionProvider` for an Application Cache that you've previously created providing a URL with its name (e.g., `MyCache`) and the port that supports the desired transport protocol: 1444 for GRPC, 8080 for REST.  When using REST, the cache hostname is followed by "/ccs".
 
@@ -50,11 +50,11 @@ To access a cache using the Java client API there are a few simple steps:
 Using A Cache
 -------------
 
-Caches support operations to get, put, replace, and remove items.  Each of these operations is included in the example which provides a very simple User management REST service using the [Java Spark](http://sparkjava.com/) framework.  At the backend of the example is the `UserService` that provides User create/update/delete operations which are implemented using the Application Cache Java client API.  For example, the code to put a User object into the `users` cache with its id as the key is:
+Caches support operations to get, put, replace, and remove items.  Each of these operations is included in the example which provides a very simple User management REST service using the [Java Spark](http://sparkjava.com/) framework.  At the backend of the example is the `UserService` that provides User create/update/delete operations which are implemented using the Application Cache Java client library.  For example, the code to put a User object into the `users` cache with its id as the key is:
 
 `users.put(user.getId(),user);`
 
-Removing an object from a cache can be as simple as calling `users.remove(id)` but because caches are not local the remove API provides performance optimization options.  The JDK `java.util.Map` interface defines the return value of the `remove()` method as the object that was removed (if it exists).  But when dealing with a cache you  may just want to remove the object and not pay the cost of transporting the removed object from the cache back to the client.  For this reason, the Java client API `Cache.remove()` method let's you specify, amongst other things, whether you want the removed object returned or not.  By default the removed object is not transfered across the wire and the method returns null.  In the example we do want the removed object so we use the `Return.OLD_VALUE` option.
+Removing an object from a cache can be as simple as calling `users.remove(id)` but because caches are not local the remove API provides performance optimization options.  The JDK `java.util.Map` interface defines the return value of the `remove()` method as the object that was removed (if it exists).  But when dealing with a cache you  may just want to remove the object and not pay the cost of transporting the removed object from the cache back to the client.  For this reason, the Java client library `Cache.remove()` method let's you specify, amongst other things, whether you want the removed object returned or not.  By default the removed object is not transfered across the wire and the method returns null.  In the example we do want the removed object so we use the `Return.OLD_VALUE` option.
 
 `User user = users.remove(id, Return.OLD_VALUE);`
 
@@ -62,7 +62,7 @@ Updating a user is done using `Cache.replace()` which, like `remove()` provides 
 
 `users.replace(id, user);`
 
-The following diagram illustrates the structure of this example when deployed to the Application Container Cloud.  Clients interact with the User application via REST which is routed through the ACCS load balancer.  In the diagram we've scaled the application out to two instances.  The 'MyCache' Application Cache is also scaled out to three instances to provide HA and ensure all data is memory safe.  The loss of any one cache instance will not result in data loss.  User applications are stateless and use the Java client API to interact with a cache over the internal ACCS overlay network.  As we scale the number of User application instances up and down to handle varying workloads the data remains safely stored in the cache.
+The following diagram illustrates the structure of this example when deployed to the Application Container Cloud.  Clients interact with the User application via REST which is routed through the ACCS load balancer.  In the diagram we've scaled the application out to two instances.  The 'MyCache' Application Cache is also scaled out to three instances to provide HA and ensure all data is memory safe.  The loss of any one cache instance will not result in data loss.  User applications are stateless and use the Java client library to interact with a cache over the internal ACCS overlay network.  As we scale the number of User application instances up and down to handle varying workloads the data remains safely stored in the cache.
 
 ![Example Structure](images/structure.png)
 
@@ -80,7 +80,7 @@ Enough background!  Let's get on with deploying the example and trying it out.
 
 3. Build the example and generate a deployable application archive
 
-   In the root folder of the cloned Git repository run `mvn clean package`.  This will generate a "fat" jar that contains both the example application code and all of the libraries the application depends on, including the Java client API.  The Maven build also generates an ACCS application archive file which packages the fat jar along with a manifest.json file.
+   In the root folder of the cloned Git repository run `mvn clean package`.  This will generate a "fat" jar that contains both the example application code and all of the libraries the application depends on, including the Java client library.  The Maven build also generates an ACCS application archive file which packages the fat jar along with a manifest.json file.
 
 4. Deploy the example to ACCS
 
@@ -173,12 +173,12 @@ Which results in a 404 error as it's no longer in the cache.
 Developing Locally
 ------------------
 
-To make it easier to develop, test, and debug applications that use Application Caches, the Java client API includes support for a `LocalSession`.  It offers the exact same API as the `RemoteSession` you would use when deploying to ACCS but it runs in-process.  Take a look at the example `LocalUserService` class which uses a `LocalSession`.  By running the `LocalMain` class you can start the example application with a local in-process cache rather than a remote shared cache.  Handy!
+To make it easier to develop, test, and debug applications that use Application Caches, the Java cache client library includes support for a `LocalSession`.  It offers the exact same API as the `RemoteSession` you would use when deploying to ACCS but it runs in-process.  Take a look at the example `LocalUserService` class which uses a `LocalSession`.  By running the `LocalMain` class you can start the example application with a local in-process cache rather than a remote shared cache.  Handy!
 
-Obtaining the Application Cache Java API
-----------------------------------------
+Obtaining the Application Cache Java Client Library
+---------------------------------------------------
 
-There are a few ways to obtain the Java API jars depending on how you prefer to work.  
+There are a few ways to obtain the Java cache client library depending on how you prefer to work.  
 
 1. The first is through Maven Central.  The dependency you would add to your Maven pom.xml is:
 
@@ -190,9 +190,9 @@ There are a few ways to obtain the Java API jars depending on how you prefer to 
 
 2. The second way is from the Oracle Technology Network.  Here you can download a zip with the jars, javadoc, and sources.
 
-3. And finally you can always get the [sources from GitHub](https://github.com/oracle/accs-caching-java-sdk) where the client API is housed.
+3. And finally you can always get the [sources from GitHub](https://github.com/oracle/accs-caching-java-sdk) where the client library is housed.
 
 Acknowledgements
 ================
 
-This demo is based on code from a blog post by Michael Scharhag introducing the Java Spark framework.  The original code has an [Apache 2.0 license](https://github.com/mscharhag/blog-examples/blob/master/LICENSE) and I've made substantial changes as is permitted. In particular I've replaced the in-memory User HashMap in the original with an ACCS Application Cache.  You can find the original posting and associated code on [Michael's blog](http://www.mscharhag.com/java/building-rest-api-with-spark).
+This example is based on code from a blog post by Michael Scharhag introducing the Java Spark framework.  The original code has an [Apache 2.0 license](https://github.com/mscharhag/blog-examples/blob/master/LICENSE) and I've made substantial changes as is permitted. In particular I've replaced the in-memory User HashMap in the original with an ACCS Application Cache.  You can find the original posting and associated code on [Michael's blog](http://www.mscharhag.com/java/building-rest-api-with-spark).

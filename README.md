@@ -5,7 +5,7 @@ The [Oracle Application Container Cloud (ACCS)](http://cloud.oracle.com/acc)'s A
 
 Under the Hood
 --------------
-The ACCS Application Cache is built on the highly performant and scalable [Oracle Coherence](http://www.oracle.com/technetwork/middleware/coherence/overview/index.html) in-memory data grid that's been powering trading and other memory and time sensitive applications for years.  In the ACCS Application Cache, the underlying Coherence implementation is not exposed but if you need a true in-memory data grid cloud service don't worry, Oracle is working on exactly that.  In the meantime, the Coherence team continues to innovate.  For example here's the Coherence team's [Brian Oliver speaking at Oracle Code in on distributed streams](https://youtu.be/9yt43EIDJmg).
+The ACCS Application Cache is built on the highly performant and scalable [Oracle Coherence](http://www.oracle.com/technetwork/middleware/coherence/overview/index.html) in-memory data grid that's been powering trading and other memory and time sensitive applications for years.  In the ACCS Application Cache, the underlying Coherence implementation is not exposed but if you need an in-memory data grid cloud service don't worry, Oracle is working on exactly that.  In the meantime, the Coherence team continues to innovate.  For example here's the Coherence team's [Brian Oliver speaking at Oracle Code in on distributed streams](https://youtu.be/9yt43EIDJmg).
 
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/9yt43EIDJmg/0.jpg)](https://youtu.be/9yt43EIDJmg)
 
@@ -50,7 +50,7 @@ To access a cache using the Java client library there are a few simple steps:
 Using A Cache
 -------------
 
-Caches support operations to get, put, replace, and remove items.  Each of these operations is included in the example which provides a very simple User management REST service using the [Java Spark](http://sparkjava.com/) framework.  At the backend of the example is the `UserService` that provides User create/update/delete operations which are implemented using the Application Cache Java client library.  For example, the code to put a User object into the `users` cache with its id as the key is:
+Caches support operations to get, put, replace, and remove items (which are key/value pairs).  Each of these operations is included in the example which provides a very simple User management REST service using the [Java Spark](http://sparkjava.com/) framework.  At the backend of the example is the `UserService` that provides User create/update/delete operations which are implemented using the Application Cache Java client library.  For example, the code to put a User object into the `users` cache with its id as the key is:
 
 `users.put(user.getId(),user);`
 

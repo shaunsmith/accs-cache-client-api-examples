@@ -86,7 +86,7 @@ Enough background!  Let's get on with deploying the example and trying it out.
 
   1. Navigate to the ACCS Service console, click "Create Application", and choose Java SE for the runtime.
 
-  2. Provide an application name, choose "Upload", and select the application archive `appcache-demo-1.0-dist.zip` from the Maven generated `target` folder.
+  2. Provide an application name, choose "Upload", and select the application archive `appcache-example-1.0-dist.zip` from the Maven generated `target` folder.
 
   3. Select `MyCache` as the associated Application Cache.
 
